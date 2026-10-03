@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ElevenLabs AI Narration Studio - Transform text into lifelike speech using state-of-the-art ElevenLabs narration models.">
+  <title>ElevenLabs AI Narration Studio</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for clean UI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Background Glow & Grid Canvas -->
+  <div class="background-decorations">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header / Navigation -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <div class="logo-bars">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="brand-text">
+          <h1>ElevenLabs <span class="gradient-text">Narration Studio</span></h1>
+          <p class="tagline">Next-generation neural speech synthesis & voice navigation</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="api-status-badge" id="apiStatusBadge">
+          <span class="status-dot" id="apiStatusDot"></span>
+          <span class="status-label" id="apiStatusLabel">Demo Mode</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenApiKeyModal">
+          <i class="fa-solid fa-key"></i>
+          <span>API Key</span>
+        </button>
+        <a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">
+          <span>ElevenLabs Docs</span>
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-workspace">
+      <!-- Left Column: Input, Models & Voice Configuration -->
+      <section class="workspace-card main-studio-card">
+        <!-- Text Input Section Header -->
+        <div class="card-section-header">
+          <div class="section-title-wrap">
+            <i class="fa-solid fa-align-left text-accent"></i>
+            <h2>Text Script for Narration</h2>
+          </div>
+          <div class="text-meta">
+            <span id="charCount">0 characters</span>
+            <span class="meta-divider">•</span>
+            <span id="wordCount">0 words</span>
+            <span class="meta-divider">•</span>
+            <span id="estDuration">~0s audio</span>
+          </div>
+        </div>
+
+        <!-- Sample Presets Quick Bar -->
+        <div class="preset-chips-container">
+          <span class="preset-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Try Preset:</span>
+          <button type="button" class="chip-btn" data-preset="documentary">🎙️ Documentary</button>
+          <button type="button" class="chip-btn" data-preset="scifi">🚀 Sci-Fi Tale</button>
+          <button type="button" class="chip-btn" data-preset="keynote">✨ Product Keynote</button>
+          <button type="button" class="chip-btn" data-preset="meditation">🧘 Mindfulness</button>
+        </div>
+
+        <!-- Textarea Input Area -->
+        <div class="textarea-wrapper">
+          <textarea 
+            id="textInput" 
+            placeholder="Paste or type any text content here to start narration with ElevenLabs models..."
+            rows="7"
+            spellcheck="false"
+          ></textarea>
+          
+          <div class="textarea-tools">
+            <button type="button" class="tool-btn" id="btnPasteClipboard" title="Paste from clipboard">
+              <i class="fa-regular fa-paste"></i>
+              <span>Paste</span>
+            </button>
+            <button type="button" class="tool-btn" id="btnClearText" title="Clear text">
+              <i class="fa-regular fa-trash-can"></i>
+              <span>Clear</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls Row: Model Dropdown & Voice Dropdown -->
+        <div class="selection-grid">
+          <!-- Model Selection Dropdown (Prominently featured per user requirement) -->
+          <div class="control-group">
+            <label for="modelSelect" class="control-label">
+              <span><i class="fa-solid fa-microchip"></i> ElevenLabs Model</span>
+              <span class="badge-subtle" id="modelTagBadge">v2 Multilingual</span>
+            </label>
+            <div class="custom-select-wrapper">
+              <select id="modelSelect" class="form-select">
+                <option value="eleven_multilingual_v2" selected>
+                  Eleven Multilingual v2 (29 Languages • High Emotion & Realism)
+                </option>
+                <option value="eleven_flash_v2_5">
+                  Eleven Flash v2.5 (32 Languages • Ultra-Low Latency ~75ms)
+                </option>
+                <option value="eleven_turbo_v2_5">
+                  Eleven Turbo v2.5 (32 Languages • High Speed & Quality)
+                </option>
+                <option value="eleven_turbo_v2">
+                  Eleven Turbo v2 (English • Optimized Low Latency)
+                </option>
+                <option value="eleven_monolingual_v1">
+                  Eleven Monolingual v1 (English • Classic Stable Voice)
+                </option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-caret"></i>
+            </div>
+            <p class="control-hint" id="modelDescription">
+              The flagship model for storytelling, conversational dialogue, and high emotional nuance in 29 languages.
+            </p>
+          </div>
+
+          <!-- Voice Selection Dropdown -->
+          <div class="control-group">
+            <div class="control-label-row">
+              <label for="voiceSelect" class="control-label">
+                <span><i class="fa-solid fa-user-astronaut"></i> Narrator Voice</span>
+              </label>
+              <button type="button" class="btn-link" id="btnRefreshVoices" title="Sync voices with ElevenLabs account">
+                <i class="fa-solid fa-arrows-rotate"></i> Sync Voices
+              </button>
+            </div>
+            <div class="custom-select-wrapper">
+              <select id="voiceSelect" class="form-select">
+                <!-- Dynamically loaded from js/config.js -->
+              </select>
+              <i class="fa-solid fa-chevron-down select-caret"></i>
+            </div>
+            <p class="control-hint" id="voiceDescription">
+              Rachel • Warm, conversational, and natural American female tone.
+            </p>
+          </div>
+        </div>
+
+        <!-- Voice Fine-Tuning Settings (Collapsible) -->
+        <div class="settings-accordion" id="settingsAccordion">
+          <button type="button" class="accordion-header" id="accordionToggle">
+            <span class="accordion-title">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Advanced Voice Settings (Stability, Clarity, Style)</span>
+            </span>
+            <i class="fa-solid fa-chevron-down accordion-arrow"></i>
+          </button>
+          
+          <div class="accordion-content" id="accordionBody">
+            <div class="sliders-grid">
+              <!-- Stability Slider -->
+              <div class="slider-card">
+                <div class="slider-header">
+                  <span class="slider-label">Stability</span>
+                  <span class="slider-val" id="stabilityVal">50%</span>
+                </div>
+                <input type="range" id="stabilitySlider" min="0" max="100" value="50" class="custom-range">
+                <div class="slider-range-labels">
+                  <span>More Dynamic</span>
+                  <span>More Stable</span>
+                </div>
+              </div>
+
+              <!-- Similarity / Clarity Slider -->
+              <div class="slider-card">
+                <div class="slider-header">
+                  <span class="slider-label">Clarity / Similarity</span>
+                  <span class="slider-val" id="similarityVal">75%</span>
+                </div>
+                <input type="range" id="similaritySlider" min="0" max="100" value="75" class="custom-range">
+                <div class="slider-range-labels">
+                  <span>Low Boost</span>
+                  <span>High Fidelity</span>
+                </div>
+              </div>
+
+              <!-- Style Exaggeration Slider -->
+              <div class="slider-card">
+                <div class="slider-header">
+                  <span class="slider-label">Style Exaggeration</span>
+                  <span class="slider-val" id="styleVal">0%</span>
+                </div>
+                <input type="range" id="styleSlider" min="0" max="100" value="0" class="custom-range">
+                <div class="slider-range-labels">
+                  <span>Neutral</span>
+                  <span>Expressive</span>
+                </div>
+              </div>
+
+              <!-- Speaker Boost Toggle -->
+              <div class="slider-card toggle-card">
+                <div class="toggle-info">
+                  <span class="slider-label">Speaker Boost</span>
+                  <span class="toggle-desc">Enhance speaker similarity and audio presence</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="speakerBoostToggle" checked>
+                  <span class="slider-toggle round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Narration Playback Action Bar -->
+        <div class="play-action-bar">
+          <div class="primary-controls">
+            <!-- Main Play Button (Primary requested trigger) -->
+            <button type="button" class="btn btn-primary btn-hero" id="btnPlayNarration">
+              <div class="btn-glow-pulse"></div>
+              <i class="fa-solid fa-play" id="playBtnIcon"></i>
+              <span id="playBtnText">Play Narration</span>
+              <span class="spinner-loader" id="playSpinner" style="display: none;"></span>
+            </button>
+
+            <!-- Pause / Stop Control -->
+            <button type="button" class="btn btn-secondary btn-icon" id="btnPauseResume" disabled title="Pause / Resume playback">
+              <i class="fa-solid fa-pause" id="pauseResumeIcon"></i>
+            </button>
+            <button type="button" class="btn btn-secondary btn-icon" id="btnStopNarration" disabled title="Stop playback">
+              <i class="fa-solid fa-stop"></i>
+            </button>
+          </div>
+
+          <!-- Status Indicator -->
+          <div class="playback-status-container" id="playbackStatusContainer">
+            <span class="live-status-dot" id="liveStatusDot"></span>
+            <span class="live-status-text" id="liveStatusText">Ready to narrate</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Visualizer, Audio Player & Narration History -->
+      <section class="side-column">
+        <!-- Live Audio Waveform & Player Card -->
+        <div class="workspace-card audio-player-card">
+          <div class="card-section-header">
+            <div class="section-title-wrap">
+              <i class="fa-solid fa-waveform-lines text-accent"></i>
+              <h2>Audio Visualizer & Player</h2>
+            </div>
+            <span class="badge-format">MP3 44.1kHz</span>
+          </div>
+
+          <!-- Real-time Canvas Waveform Visualizer -->
+          <div class="visualizer-container">
+            <canvas id="audioVisualizer" width="600" height="140"></canvas>
+            <div class="visualizer-overlay" id="visualizerIdleOverlay">
+              <div class="pulse-soundwave">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <p>Visualizer activates on audio playback</p>
+            </div>
+          </div>
+
+          <!-- Timeline Scrubber & Time -->
+          <div class="audio-timeline-wrap">
+            <div class="time-readout">
+              <span id="currentTime">00:00</span>
+              <span class="time-sep">/</span>
+              <span id="totalDuration">00:00</span>
+            </div>
+            <div class="seek-bar-container" id="seekBarContainer">
+              <div class="seek-track">
+                <div class="seek-progress" id="seekProgress"></div>
+                <div class="seek-handle" id="seekHandle"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player Controls Bar -->
+          <div class="player-controls-row">
+            <div class="volume-control-wrap">
+              <button type="button" class="btn-icon-subtle" id="btnMuteToggle" title="Mute/Unmute">
+                <i class="fa-solid fa-volume-high" id="volumeIcon"></i>
+              </button>
+              <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" class="volume-slider">
+            </div>
+
+            <div class="speed-control-wrap">
+              <span class="speed-label">Speed:</span>
+              <select id="playbackRateSelect" class="speed-select">
+                <option value="0.75">0.75x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2.0">2.0x</option>
+              </select>
+            </div>
+
+            <button type="button" class="btn btn-secondary btn-sm" id="btnDownloadAudio" disabled title="Download audio as MP3">
+              <i class="fa-solid fa-download"></i>
+              <span>Download MP3</span>
+            </button>
+          </div>
+
+          <!-- Hidden Native Audio Element -->
+          <audio id="nativeAudioPlayer" preload="auto"></audio>
+        </div>
+
+        <!-- Narration History & Library Card -->
+        <div class="workspace-card history-card">
+          <div class="card-section-header">
+            <div class="section-title-wrap">
+              <i class="fa-solid fa-clock-rotate-left text-accent"></i>
+              <h2>Recent Generations</h2>
+            </div>
+            <button type="button" class="btn-link" id="btnClearHistory" title="Clear history">
+              Clear
+            </button>
+          </div>
+
+          <div class="history-list" id="historyList">
+            <div class="history-empty" id="historyEmpty">
+              <i class="fa-solid fa-microphone-slash"></i>
+              <p>No narrations generated yet.</p>
+              <span>Click "Play Narration" to synthesize your first audio clip.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Powered by <strong>ElevenLabs API</strong> • High Fidelity Generative Voice AI</p>
+      <div class="footer-links">
+        <span>Model Support: Multilingual v2, Flash v2.5, Turbo v2.5</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- API Key Modal -->
+  <div class="modal-backdrop" id="apiKeyModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-key text-accent"></i>
+          <h3>Configure ElevenLabs API Key</h3>
+        </div>
+        <button type="button" class="modal-close" id="btnCloseApiKeyModal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-notice">
+          Your API key is stored securely in your browser's <code>localStorage</code> and sent directly in the <code>xi-api-key</code> header to ElevenLabs. It is never logged or shared.
+        </p>
+
+        <div class="form-group">
+          <label for="apiKeyInput" class="form-label">ElevenLabs Secret API Key</label>
+          <div class="input-password-wrapper">
+            <input 
+              type="password" 
+              id="apiKeyInput" 
+              class="form-input" 
+              placeholder="sk_..." 
+              autocomplete="off"
+            >
+            <button type="button" class="btn-icon-subtle toggle-pass" id="btnToggleApiKeyVisibility" title="Show/Hide Key">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <span class="input-subtext">
+            💡 <strong>Tip:</strong> ElevenLabs secret API keys start with <code>sk_</code>. If you copied the 64-character <em>Key ID</em>, generate or reveal your <code>sk_...</code> secret key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" rel="noopener noreferrer">elevenlabs.io/app/settings/api-keys</a>.
+          </span>
+        </div>
+
+        <div class="api-test-result" id="apiTestResult" style="display: none;"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="btnRemoveApiKey">Clear Key</button>
+        <div class="modal-footer-right">
+          <button type="button" class="btn btn-secondary" id="btnTestApiKey">
+            <i class="fa-solid fa-plug"></i> Test Connection
+          </button>
+          <button type="button" class="btn btn-primary" id="btnSaveApiKey">
+            <i class="fa-solid fa-check"></i> Save Key
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/elevenlabs.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
